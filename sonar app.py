@@ -11,7 +11,8 @@ pygame.init()
 font = pygame.font.Font("Minecraftia-Regular.ttf", 19)
 
 
-text = None
+text = font.render("Distance", True, (255, 255, 255))
+text2 = font.render("Time", True, (255, 255, 255))
 
 screen=pygame.display.set_mode((600,600))
 pygame.display.set_caption("Sonar visualization")
@@ -26,6 +27,10 @@ echo_wave = False
 icon = pygame.image.load("icon.png").convert_alpha()
 icon = pygame.transform.scale(icon, (50, 50))
 icon_rect = icon.get_rect()
+
+clock1 = pygame.image.load("clock.png").convert_alpha()
+clock1 = pygame.transform.scale(clock1, (40,40))
+clock1_rect = clock1.get_rect()
 
 
 bg = pygame.image.load("background.png").convert()
@@ -56,6 +61,7 @@ echo_speed = 2
 last_time = pygame.time.get_ticks()
 
 
+unit = font.render("1px = 10m", True, (255, 255, 255))
 
 summon = False
 inc=True
@@ -66,7 +72,6 @@ while running:
     echo_surf.fill((0,0,0,0))
     score_overlay.fill((0,0,0,0))
 
-    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -89,6 +94,26 @@ while running:
 
     #right line
     pygame.draw.line(score_overlay, (50, 205, 50), (545, 537), (597, 610), 4)
+
+    #top square
+    pygame.draw.polygon(score_overlay, (0, 0, 0, 175), [(20, 20), (155, 20), (155, 67),  (20, 67)])
+
+    
+#top GUI
+    #top line
+    pygame.draw.line(score_overlay, (50, 205, 50), (27, 27), (147, 27), 2)
+
+    #bottom line
+    pygame.draw.line(score_overlay, (50, 205, 50), (147, 60), (27, 60), 2)
+
+    #left line
+    pygame.draw.line(score_overlay, (50, 205, 50), (27, 27), (27, 60), 2)
+
+    #right line
+    pygame.draw.line(score_overlay, (50, 205, 50), (147, 60), (147, 27), 2)
+
+
+    
 
     
 
@@ -122,9 +147,8 @@ while running:
             distancem = int(1500 * totaltime)/2
             distancepx = int(distancem/10)
 
-            text = font.render(f"{distancem}m/{distancepx}px", True, (255, 255, 255))
-
-            print(f"distance- {distancem}m/{distancepx}px, total time- {totaltime}")
+            text = font.render(f"{distancem}m or {distancepx}px", True, (255, 255, 255))
+            text2 = font.render(f"Time- {totaltime}s", True, (255, 255, 255))
 
     
 
@@ -165,12 +189,15 @@ while running:
             hit_lockedtil = pygame.time.get_ticks() + locked_ms  
 
     score_overlay.blit(icon, (50, 545))
+    score_overlay.blit(clock1, (345, 550))
+    score_overlay.blit(unit, (35, 31))
     
 
-    if text:
-        score_overlay.blit(text, (95, 557))
+    if text or text2:
+        score_overlay.blit(text, (106, 557))
+        score_overlay.blit(text2, (395, 557))
 
-        
+    
     screen.blit(score_overlay, (0,0))
 
     pygame.display.flip()
