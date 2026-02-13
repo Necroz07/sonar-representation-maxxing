@@ -10,12 +10,11 @@ pygame.mixer.init()
 
 wave_startsound = pygame.mixer.Sound("wave start.wav")
 wave_endsound = pygame.mixer.Sound("wave end.wav")
-hitsound = pygame.mixer.Sound("cat.mp3")
+hitsound = pygame.mixer.Sound("cat.wav")
 click = pygame.mixer.Sound("click.mp3")
-bgm = pygame.mixer.Sound("bg.mp3")
-pause = pygame.mixer.Sound("pause.mp3")
+pause = pygame.mixer.Sound("pause.wav")
 
-sfx_vol = 0.6
+sfx_vol = 0.8
 bg_vol = 0.6
 
 
@@ -77,10 +76,11 @@ unit = font.render("1px = 10m", True, (255, 255, 255))
 
 summon = False
 inc=True
-pausebool = False
+pausech = 'no'
 
+pygame.mixer.music.load("bg.mp3")
+pygame.mixer.music.play(-1)
 
-bgm.play(-1)
 
 while running:
 
@@ -88,7 +88,9 @@ while running:
     wave_endsound.set_volume(sfx_vol)
     hitsound.set_volume(sfx_vol)
     click.set_volume(sfx_vol)
-    bgm.set_volume(bg_vol)
+    pygame.mixer.music.set_volume(bg_vol)
+
+    
     pause.set_volume(bg_vol)
 
     wave_surf.fill((0,0,0,0))
@@ -99,7 +101,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-        elif event.type == pygame.MOUSEBUTTONUP and not pausebool:
+        elif event.type == pygame.MOUSEBUTTONUP and pausech=='no':
             summon = True
             click.play()
             spawn_rect.center = event.pos
@@ -107,15 +109,22 @@ while running:
             spawntime = pygame.time.get_ticks()
 
         elif event.type == pygame.KEYDOWN:
-            if (event.key == pygame.K_ESCAPE) and (not pausebool):
-                pausebool = True
+            if (event.key == pygame.K_ESCAPE) and (pausech=='no'):
+                pausech = 'pause'
                 pygame.mixer.music.pause()
-                pause.play()
+                pause.play(-1)
                 
-            elif (event.key == pygame.K_ESCAPE) and (pausebool):
-                pausebool = False
-                pygame.mixer.music.stop()
+            elif (event.key == pygame.K_ESCAPE) and (pausech=='pause'):
+                pausech = 'no'
+                pause.stop()
                 pygame.mixer.music.unpause()
+
+            elif (event.key == pygame.K_TAB) and (pausech=='no'):
+                pausech= 'tab'
+
+            elif (event.key == pygame.K_TAB) and (pausech=='tab'):
+                pausech = 'no'
+                
 
             
 
@@ -154,20 +163,20 @@ while running:
 
     
 
-    if not pausebool:
+    if pausech=='no':
         screen.blit(bg, (0,0))
         screen.blit(obj, obj_rect)
         screen.blit(wave_surf, (0, 0))
 
-    if inc==True and not pausebool:
+    if inc==True and pausech=='no':
         wave_radius += wave_speed
 
 
-    elif inc==False and not pausebool:
+    elif inc==False and pausech=='no':
         wave_radius -= wave_speed
 
     
-    if echo_wave==True and not pausebool:
+    if echo_wave==True and pausech=='no':
         pygame.draw.circle(echo_surf, (0, 0, 0, 150), (spawncenter[0]+11, spawncenter[1]+11), echo_rad, 5)
     
         screen.blit(echo_surf, (0,0))
@@ -202,7 +211,7 @@ while running:
 
 
 
-    if summon == True and not pausebool:
+    if summon == True and pausech=='no':
         screen.blit(spawn, (spawncenter))
 
         if pygame.time.get_ticks() - spawntime > 3000:
@@ -238,8 +247,20 @@ while running:
         score_overlay.blit(text, (106, 557))
         score_overlay.blit(text2, (395, 557))
 
-    if not pausebool:
+    if pausech=='no':
         screen.blit(score_overlay, (0,0))
+
+
+    if pausech=='pause':
+        pygame.draw.rect(score_overlay, (0,0,0, 150), [(0,0), (0,600), (600, 0), (600, 600)])
+        pygame.draw.polygon(score_overlay, (0, 0, 0, 210), [(0,600), (50, 530), (100, 530), (200, 530), (300,530), (400, 530), (500, 530), (550, 530), (600,600)])
+        screen.blit(score_overlay, (0,0))
+
+
+
+
+
+    
 
     pygame.display.flip()
     
