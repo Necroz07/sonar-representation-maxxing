@@ -21,6 +21,9 @@ bg_vol = 0.6
 font = pygame.font.Font("Minecraftia-Regular.ttf", 19)
 
 
+font1 = pygame.font.Font("Minecraftia-Regular.ttf", 57)
+
+
 text = font.render("Distance", True, (255, 255, 255))
 text2 = font.render("Time", True, (255, 255, 255))
 
@@ -42,6 +45,16 @@ icon_rect = icon.get_rect()
 clock1 = pygame.image.load("clock.png").convert_alpha()
 clock1 = pygame.transform.scale(clock1, (40,40))
 clock1_rect = clock1.get_rect()
+
+
+musicpng = pygame.image.load("music.png")
+musicpng = pygame.transform.scale(musicpng, (200, 200))
+musicpng_rect = musicpng.get_rect()
+
+
+sfxpng = pygame.image.load("sfx.png")
+sfxpng = pygame.transform.scale(sfxpng, (200, 200))
+sfxpng_rect = sfxpng.get_rect()
 
 
 bg = pygame.image.load("background.png").convert()
@@ -67,6 +80,8 @@ wave_radius = 0
 wave_speed = 2
 echo_rad = 0
 echo_speed = 2
+
+alpha = 0
 
 
 last_time = pygame.time.get_ticks()
@@ -111,6 +126,7 @@ while running:
         elif event.type == pygame.KEYDOWN:
             if (event.key == pygame.K_ESCAPE) and (pausech=='no'):
                 pausech = 'pause'
+                alpha = 0
                 pygame.mixer.music.pause()
                 pause.play(-1)
                 
@@ -163,10 +179,10 @@ while running:
 
     
 
-    if pausech=='no':
-        screen.blit(bg, (0,0))
-        screen.blit(obj, obj_rect)
-        screen.blit(wave_surf, (0, 0))
+    
+    screen.blit(bg, (0,0))
+    screen.blit(obj, obj_rect)
+    screen.blit(wave_surf, (0, 0))
 
     if inc==True and pausech=='no':
         wave_radius += wave_speed
@@ -252,8 +268,27 @@ while running:
 
 
     if pausech=='pause':
-        pygame.draw.rect(score_overlay, (0,0,0, 150), [(0,0), (0,600), (600, 0), (600, 600)])
-        pygame.draw.polygon(score_overlay, (0, 0, 0, 210), [(0,600), (50, 530), (100, 530), (200, 530), (300,530), (400, 530), (500, 530), (550, 530), (600,600)])
+
+        if alpha<=210:
+            pygame.draw.polygon(score_overlay, (0, 0, 0, alpha), [(0,100), (0,500), (600, 500), (600, 100)])
+            alpha+=5
+        else:
+            pygame.draw.polygon(score_overlay, (0, 0, 0, 220), [(0,100), (0,500), (600, 500), (600, 100)])
+        
+        pygame.draw.polygon(score_overlay, (0, 250, 0, 220), [(15, 115), (15, 485), (585, 485), (585, 115)], 3)
+
+        
+        pygame.draw.polygon(score_overlay, (255, 255, 255, 220), [(55, 215), (55, 450), (280, 450), (280, 215)], 3)
+
+        pygame.draw.polygon(score_overlay, (255, 255, 255, 220), [ (330, 215), (550, 215), (550, 450), (330, 450)], 3)
+
+        PAUSEtext= font1.render("PAUSE", True, (255, 255, 255, 255))
+
+        score_overlay.blit(PAUSEtext, (200, 130))
+
+        score_overlay.blit(musicpng, (55, 235))
+        score_overlay.blit(sfxpng, (330, 235))
+                             
         screen.blit(score_overlay, (0,0))
 
 
