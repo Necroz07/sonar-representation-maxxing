@@ -14,10 +14,10 @@ wave_endsound = pygame.mixer.Sound("wave end.wav")
 hitsound = pygame.mixer.Sound("cat.mp3")
 click = pygame.mixer.Sound("click.mp3")
 bgm = pygame.mixer.Sound("bg.mp3")
+pause = pygame.mixer.Sound("pause.mp3")
 
 sfx_vol = 0.6
 bg_vol = 0.6
-
 
 
 font = pygame.font.Font("Minecraftia-Regular.ttf", 19)
@@ -91,6 +91,7 @@ while running:
     hitsound.set_volume(sfx_vol)
     click.set_volume(sfx_vol)
     bgm.set_volume(bg_vol)
+    pause.set_volume(bg_vol)
 
     wave_surf.fill((0,0,0,0))
     echo_surf.fill((0,0,0,0))
@@ -106,9 +107,6 @@ while running:
             spawn_rect.center = event.pos
             spawncenter= (spawn_rect.center[0]-12, spawn_rect.center[1]-12)
             spawntime = pygame.time.get_ticks()
-
-
-
 
             
 
