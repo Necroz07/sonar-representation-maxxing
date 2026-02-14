@@ -8,7 +8,7 @@ The project visualizes how sonar systems estimate distance by measuring the time
 ---
 ## Demo
 
-### https://youtu.be/U90coBMrElw
+### https://www.youtube.com/watch?v=UHLWVBOWFMs
 
 ## How It Works
 
