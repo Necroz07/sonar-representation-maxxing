@@ -14,6 +14,8 @@ hitsound = pygame.mixer.Sound("cat.wav")
 click = pygame.mixer.Sound("click.mp3")
 pause = pygame.mixer.Sound("pause.wav")
 
+sfx = True
+bgm = True
 sfx_vol = 0.8
 bg_vol = 0.6
 
@@ -34,7 +36,7 @@ wave_surf = pygame.Surface((600, 600), pygame.SRCALPHA)
 echo_surf = pygame.Surface((600, 600), pygame.SRCALPHA)
 
 score_overlay = pygame.Surface((600,600), pygame.SRCALPHA)
-pause_overlay = pygame.Surface((600,600), pygame.SRCALPHA)
+tab_overlay = pygame.Surface((600,600), pygame.SRCALPHA)
 
 echo_wave = False
 
@@ -48,12 +50,12 @@ clock1_rect = clock1.get_rect()
 
 
 musicpng = pygame.image.load("music.png")
-musicpng = pygame.transform.scale(musicpng, (200, 200))
+musicpng = pygame.transform.scale(musicpng, (180, 180))
 musicpng_rect = musicpng.get_rect()
 
 
 sfxpng = pygame.image.load("sfx.png")
-sfxpng = pygame.transform.scale(sfxpng, (200, 200))
+sfxpng = pygame.transform.scale(sfxpng, (180, 180))
 sfxpng_rect = sfxpng.get_rect()
 
 
@@ -99,15 +101,7 @@ pygame.mixer.music.play(-1)
 
 while running:
 
-    wave_startsound.set_volume(sfx_vol)
-    wave_endsound.set_volume(sfx_vol)
-    hitsound.set_volume(sfx_vol)
-    click.set_volume(sfx_vol)
-    pygame.mixer.music.set_volume(bg_vol)
-
-    
-    pause.set_volume(bg_vol)
-
+ 
     wave_surf.fill((0,0,0,0))
     echo_surf.fill((0,0,0,0))
     score_overlay.fill((0,0,0,0))
@@ -116,6 +110,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
+        #clicking when not paused
         elif event.type == pygame.MOUSEBUTTONUP and pausech=='no':
             summon = True
             click.play()
@@ -123,23 +118,46 @@ while running:
             spawncenter= (spawn_rect.center[0]-12, spawn_rect.center[1]-12)
             spawntime = pygame.time.get_ticks()
 
+        #enabling pause
         elif event.type == pygame.KEYDOWN:
             if (event.key == pygame.K_ESCAPE) and (pausech=='no'):
                 pausech = 'pause'
                 alpha = 0
                 pygame.mixer.music.pause()
                 pause.play(-1)
-                
+            
+            #disabling pause
             elif (event.key == pygame.K_ESCAPE) and (pausech=='pause'):
                 pausech = 'no'
                 pause.stop()
                 pygame.mixer.music.unpause()
 
+            #tab enable
             elif (event.key == pygame.K_TAB) and (pausech=='no'):
                 pausech= 'tab'
 
+            #tab disable
             elif (event.key == pygame.K_TAB) and (pausech=='tab'):
                 pausech = 'no'
+
+        if event.type == pygame.MOUSEBUTTONDOWN and pausech=='pause':
+            if boxbgm.collidepoint(event.pos):
+                click.play()
+
+                if bgm:
+                    bgm=False
+                else:
+                    bgm=True
+
+            elif boxsfx.collidepoint(event.pos):
+                click.play()
+
+                if sfx:
+                    sfx=False
+                else:
+                    sfx=True
+
+
                 
 
             
@@ -275,21 +293,56 @@ while running:
         else:
             pygame.draw.polygon(score_overlay, (0, 0, 0, 220), [(0,100), (0,500), (600, 500), (600, 100)])
         
+        #outline box for pause
         pygame.draw.polygon(score_overlay, (0, 250, 0, 220), [(15, 115), (15, 485), (585, 485), (585, 115)], 3)
 
-        
-        pygame.draw.polygon(score_overlay, (255, 255, 255, 220), [(55, 215), (55, 450), (280, 450), (280, 215)], 3)
+        #music button outline box
+        boxbgm = pygame.draw.polygon(score_overlay, (255, 255, 255, 220), [(55, 215), (55, 450), (280, 450), (280, 215)], 3)
 
-        pygame.draw.polygon(score_overlay, (255, 255, 255, 220), [ (330, 215), (550, 215), (550, 450), (330, 450)], 3)
+        #sfx button outline box
+        boxsfx = pygame.draw.polygon(score_overlay, (255, 255, 255, 220), [(330, 215), (550, 215), (550, 450), (330, 450)], 3)
+
+
 
         PAUSEtext= font1.render("PAUSE", True, (255, 255, 255, 255))
 
         score_overlay.blit(PAUSEtext, (200, 130))
 
-        score_overlay.blit(musicpng, (55, 235))
-        score_overlay.blit(sfxpng, (330, 235))
-                             
+        score_overlay.blit(musicpng, (75, 245))
+        score_overlay.blit(sfxpng, (350, 245))
+
+
+
+
+        if bgm:
+        
+            pygame.mixer.music.set_volume(bg_vol)
+            pause.set_volume(bg_vol)
+        else:
+            pygame.mixer.music.set_volume(0)
+            pause.set_volume(0)
+
+            pygame.draw.line(score_overlay, (255, 0, 0), (85, 245), (250, 420), 8)
+
+        if sfx:
+            wave_startsound.set_volume(sfx_vol)
+            wave_endsound.set_volume(sfx_vol)
+            hitsound.set_volume(sfx_vol)
+            click.set_volume(sfx_vol)
+
+        else:
+            wave_startsound.set_volume(0)
+            wave_endsound.set_volume(0)
+            hitsound.set_volume(0)
+            click.set_volume(0)
+
+            pygame.draw.line(score_overlay, (255, 0, 0), (360, 245), (520, 420), 8)
+
         screen.blit(score_overlay, (0,0))
+
+        
+                             
+        
 
 
 
